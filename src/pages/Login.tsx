@@ -1,21 +1,18 @@
+import { LoginForm } from "@/components/login-form"
+
 const Login = () => {
     return (
-      <div>
-        <h2 className="text-2xl font-bold mb-4">Login</h2>
-        <form>
-          <input
-            type="text"
-            placeholder="Username"
-            className="border p-2 w-full mb-2"
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            className="border p-2 w-full mb-2"
-          />
-          <button className="bg-blue-600 text-white p-2 w-full">Login</button>
-        </form>
+      <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
+      <div className="flex w-full max-w-sm flex-col gap-6">
+        <a href="#" className="flex items-center gap-2 self-center font-medium">
+          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
+          <span className="text-lg font-bold text-primary-foreground">WF</span>
+          </div>
+          <span className="hidden font-bold md:inline-block">WiFi Manager</span>
+        </a>
+        <LoginForm />
       </div>
+    </div>
     );
   };
   
