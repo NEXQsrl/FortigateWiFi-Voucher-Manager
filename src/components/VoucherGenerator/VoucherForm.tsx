@@ -1,3 +1,5 @@
+/* eslint-disable no-empty */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import type React from "react"
 
 import { useState } from "react"
@@ -10,6 +12,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { addTime, generatePassword, generateUserId } from "@/utils/function"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog"
 
 const VoucherForm = () => {
 
@@ -20,7 +24,20 @@ const VoucherForm = () => {
         email: "",
         notes: "",
         duration: "",
-    })
+    });
+
+    const [generatedVoucher, setGeneratedVoucher] = useState<{
+        username?: string;
+        password?: string;
+    } | null>(null);
+    const [message, setMessage] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const API_URL = import.meta.env.VITE_API_URL;
+    const API_TOKEN = import.meta.env.VITE_API_TOKEN;
+    const WIFI_SSID = import.meta.env.VITE_WIFI_SSID; // Nome della rete WiFi
+    const PREFIX = import.meta.env.VITE_API_PREFIX; // Prefisso per lo username
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target
@@ -32,12 +49,60 @@ const VoucherForm = () => {
     }
 
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
+        e.preventDefault();
+        setIsLoading(true);
+        setMessage(null);
+        setGeneratedVoucher(null);
         setIsSubmitting(true)
+
+        const userId = generateUserId(PREFIX);
+        const password = generatePassword();
+
+        try {
+            /* empty */
+            const response = await fetch(API_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${API_TOKEN}`,
+                },
+                body: JSON.stringify({
+                    "user-id": userId,
+                    name: formData.name,
+                    password: password,
+                    company: formData.company,
+                    email: formData.email,
+                    expiration: addTime(new Date(), Number(formData.duration)), // Convertiamo in numero
+                    comment: formData.notes,
+                    multiple: 1,
+                }),
+            });
+            console.log(new Date());
+            console.log(addTime(new Date(), Number(formData.duration)));
+            if (response.ok) {
+                setMessage("✅ Voucher generato con successo!");
+                setGeneratedVoucher({
+                    username: userId,
+                    password: password,
+                });
+                setFormData({
+                    name: "",
+                    company: "",
+                    email: "",
+                    notes: "",
+                    duration: "",
+                });
+            } else {
+                setMessage("❌ Errore nella generazione del voucher");
+            }
+        } catch (error) {
+            console.error("Errore API:", error);
+            setMessage("❌ Errore nella richiesta API");
+        } finally{
+            setIsLoading(false);
+            setIsModalOpen(true);
+        }
     }
-
-
-
 
 
     return (
@@ -90,13 +155,13 @@ const VoucherForm = () => {
                                 <SelectValue placeholder="Select duration" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="1h">1 hour</SelectItem>
-                                <SelectItem value="2h">2 hours</SelectItem>
-                                <SelectItem value="4h">4 hours</SelectItem>
-                                <SelectItem value="6h">6 hours</SelectItem>
-                                <SelectItem value="8h">8 hours</SelectItem>
-                                <SelectItem value="10h">10 hours</SelectItem>
-                                <SelectItem value="1d">1 day</SelectItem>
+                                <SelectItem value="1">1 hour</SelectItem>
+                                <SelectItem value="2">2 hours</SelectItem>
+                                <SelectItem value="4">4 hours</SelectItem>
+                                <SelectItem value="6">6 hours</SelectItem>
+                                <SelectItem value="8">8 hours</SelectItem>
+                                <SelectItem value="10">10 hours</SelectItem>
+                                <SelectItem value="24">1 day</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
@@ -114,13 +179,36 @@ const VoucherForm = () => {
                     </div>
 
                     <div className="flex justify-end">
-                        <Button type="submit" disabled={isSubmitting} className="gap-2">
-                            {isSubmitting ? <Clock className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                        <Button type="submit" className="gap-2">
+                            <Send className="h-4 w-4" />
                             Generate Voucher
                         </Button>
                     </div>
                 </form>
             </CardContent>
+
+            {/* MODALE PER ERRORE O VOUCHER */}
+            <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>{message?.includes("❌") ? "Errore" : "Voucher Generato"}</DialogTitle>
+                    </DialogHeader>
+
+                    {generatedVoucher && (
+                        <div className="p-4 border rounded-md bg-gray-100">
+                            <p className="font-semibold">Dettagli del Voucher:</p>
+                            <p><strong>Username:</strong> {generatedVoucher.username}</p>
+                            <p><strong>Password:</strong> {generatedVoucher.password}</p>
+                            <p><strong>WiFi:</strong> {WIFI_SSID}</p>
+                        </div>
+                    )}
+                    <DialogFooter>
+                        <Button onClick={() => setIsModalOpen(false)}>Chiudi</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+
         </Card>
     );
 };
