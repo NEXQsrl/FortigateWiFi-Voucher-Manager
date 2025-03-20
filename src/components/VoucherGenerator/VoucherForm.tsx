@@ -14,6 +14,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { addTime, generatePassword, generateUserId } from "@/utils/function"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog"
+import { PhoneInput } from "../ui/phone-input"
 
 const VoucherForm = () => {
 
@@ -24,6 +25,7 @@ const VoucherForm = () => {
         email: "",
         notes: "",
         duration: "",
+        mobilePhone: "",
     });
 
     const [generatedVoucher, setGeneratedVoucher] = useState<{
@@ -43,6 +45,10 @@ const VoucherForm = () => {
         const { name, value } = e.target
         setFormData((prev) => ({ ...prev, [name]: value }))
     }
+
+    const handlePhoneChange = (value: string) => {
+        setFormData((prev) => ({ ...prev, mobilePhone: value }));
+    };
 
     const handleSelectChange = (value: string) => {
         setFormData((prev) => ({ ...prev, duration: value }))
@@ -74,11 +80,11 @@ const VoucherForm = () => {
                     email: formData.email,
                     expiration: addTime(new Date(), Number(formData.duration)), // Convertiamo in numero
                     comment: formData.notes,
+                    "mobile-phone": formData.mobilePhone,
                     multiple: 1,
                 }),
             });
-            console.log(new Date());
-            console.log(addTime(new Date(), Number(formData.duration)));
+            console.log(formData.mobilePhone);
             if (response.ok) {
                 setMessage("✅ Voucher generato con successo!");
                 setGeneratedVoucher({
@@ -91,6 +97,7 @@ const VoucherForm = () => {
                     email: "",
                     notes: "",
                     duration: "",
+                    mobilePhone: "",
                 });
             } else {
                 setMessage("❌ Errore nella generazione del voucher");
@@ -98,7 +105,7 @@ const VoucherForm = () => {
         } catch (error) {
             console.error("Errore API:", error);
             setMessage("❌ Errore nella richiesta API");
-        } finally{
+        } finally {
             setIsLoading(false);
             setIsModalOpen(true);
         }
@@ -134,20 +141,31 @@ const VoucherForm = () => {
                             />
                         </div>
                     </div>
-
-                    <div className="space-y-2">
-                        <Label htmlFor="email">Email</Label>
-                        <Input
-                            id="email"
-                            name="email"
-                            type="email"
-                            placeholder="guest@example.com"
-                            value={formData.email}
-                            onChange={handleChange}
-                            required
-                        />
+                    <div className="grid gap-4 md:grid-cols-2">
+                        <div className="space-y-2">
+                            <Label htmlFor="email">Email</Label>
+                            <Input
+                                id="email"
+                                name="email"
+                                type="email"
+                                placeholder="guest@example.com"
+                                value={formData.email}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="mobilePhone">Mobile Phone</Label>
+                            <PhoneInput
+                                id="mobile-phone"
+                                name="mobilePhone"
+                                placeholder="+39 123 456 7890"
+                                value={formData.mobilePhone}
+                                onChange={handlePhoneChange}
+                                defaultCountry={import.meta.env.VITE_PHONE_COUNTRY}
+                            />
+                        </div>
                     </div>
-
                     <div className="space-y-2">
                         <Label htmlFor="duration">Voucher Duration</Label>
                         <Select value={formData.duration} onValueChange={handleSelectChange} required>
@@ -162,6 +180,9 @@ const VoucherForm = () => {
                                 <SelectItem value="8">8 hours</SelectItem>
                                 <SelectItem value="10">10 hours</SelectItem>
                                 <SelectItem value="24">1 day</SelectItem>
+                                <SelectItem value="168">1 week</SelectItem>
+                                <SelectItem value="744">1 month</SelectItem>
+                                <SelectItem value="8928">1 year</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
@@ -209,7 +230,7 @@ const VoucherForm = () => {
             </Dialog>
 
 
-        </Card>
+        </Card >
     );
 };
 
