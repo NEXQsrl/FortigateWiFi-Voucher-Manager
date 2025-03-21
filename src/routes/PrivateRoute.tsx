@@ -18,7 +18,8 @@ const PrivateRoute = () => {
 
     if (isAuthenticated === false) {
         console.log('Utente non autenticato');
-        return <Navigate to="/Login" replace />; // Redirigi alla pagina di login
+        //return <Navigate to="/Login" replace />; // Redirigi alla pagina di login
+        return null;
     } else {
         console.log('Utente autenticato');
 

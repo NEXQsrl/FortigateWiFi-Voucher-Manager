@@ -2,7 +2,6 @@
 import { Routes, Route } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 import AuthLayout from "../layouts/AuthLayout";
-import Home from "../pages/Home";
 import Login from "../pages/Login";
 import VoucherList from "../pages/VoucherList";
 import VoucherGenerator from "../pages/VoucherGenerator";
