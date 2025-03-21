@@ -5,7 +5,7 @@ export const msalConfig = {
         redirectUri: import.meta.env.VITE_REDIRECT_URI, // URL di redirect, assicurati che corrisponda a quello che hai configurato su Azure
     },
     cache: {
-        cacheLocation: 'sessionStorage', // dove viene memorizzato il token
+        cacheLocation: 'sessioStorage', // dove viene memorizzato il token
         storeAuthStateInCookie: false, // può essere true per gestire meglio i problemi sui browser più vecchi
     },
 };

@@ -15,8 +15,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { addTime, generatePassword, generateUserId } from "@/utils/function"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog"
 import { PhoneInput } from "../ui/phone-input"
+import { useMsal } from '@azure/msal-react';
 
 const VoucherForm = () => {
+
+    const { accounts } = useMsal(); 
+
+    console.log("Account: "+ accounts[0]?.name);
+
 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [formData, setFormData] = useState({
@@ -65,7 +71,6 @@ const VoucherForm = () => {
         const password = generatePassword();
 
         try {
-            /* empty */
             const response = await fetch(API_URL, {
                 method: "POST",
                 headers: {
