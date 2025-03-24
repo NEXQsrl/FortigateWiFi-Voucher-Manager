@@ -33,13 +33,7 @@ To use this application, you need:
 4. Copy the **Application (client) ID** and **Directory (tenant) ID**:
    ![IDs](https://github.com/user-attachments/assets/53106aec-5f45-4b69-be46-dc9152e72563)
 
-
-
 ## 🔑 Create a Fortigate Token
-
-
-## Installation
-
 
 ## 🚀 Installation
 1. **Download the code** from GitHub and edit the following environment variables in the `Dockerfile`:
