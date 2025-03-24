@@ -49,10 +49,18 @@ export function LoginForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">Welcome back</CardTitle>
-          <CardDescription>
-            Login with your Microsoft account
-          </CardDescription>
+          
+          <CardTitle className="text-xl">
+            {import.meta.env.VITE_NAME}
+          </CardTitle>
+          
+          <hr className="my-2 border-t border-gray-300" />
+
+          <CardTitle className="text-xl">
+            Welcome back
+          </CardTitle>
+          
+          
         </CardHeader>
         <CardContent>
           {

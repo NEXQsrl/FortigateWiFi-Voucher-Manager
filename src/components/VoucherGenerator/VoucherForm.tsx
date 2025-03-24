@@ -70,6 +70,9 @@ const VoucherForm = () => {
         const userId = generateUserId(PREFIX);
         const password = generatePassword();
 
+         // Ottieni il nome dell'utente loggato (display name)
+        const sponsor = accounts[0]?.name;
+
         try {
             const response = await fetch(API_URL, {
                 method: "POST",
@@ -87,6 +90,7 @@ const VoucherForm = () => {
                     comment: formData.notes,
                     "mobile-phone": formData.mobilePhone,
                     multiple: 1,
+                    sponsor: sponsor,  // Aggiungi lo sponsor al corpo della richiesta
                 }),
             });
             console.log(formData.mobilePhone);
@@ -127,7 +131,7 @@ const VoucherForm = () => {
                             <Input
                                 id="name"
                                 name="name"
-                                placeholder="Guest name"
+                                placeholder="Guest full name"
                                 value={formData.name}
                                 onChange={handleChange}
                                 required

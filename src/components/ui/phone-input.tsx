@@ -159,8 +159,13 @@ const FlagComponent = ({ country, countryName }: RPNInput.FlagProps) => {
   const Flag = flags[country];
 
   return (
-    <span className="flex h-4 w-6 overflow-hidden rounded-sm bg-foreground/20 [&_svg]:size-full">
-      {Flag && <Flag title={countryName} />}
+    <span className="flex items-center justify-center h-6 w-6 overflow-hidden rounded-sm bg-foreground/0">
+      {/* Aggiungi la bandiera senza className direttamente su di essa */}
+      {Flag && (
+        <span className="h-full w-full flex items-center justify-center">
+          <Flag title={countryName} />
+        </span>
+      )}
     </span>
   );
 };
