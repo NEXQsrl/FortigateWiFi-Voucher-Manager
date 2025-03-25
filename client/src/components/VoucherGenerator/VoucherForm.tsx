@@ -15,13 +15,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { addTime, generatePassword, generateUserId } from "@/utils/function"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog"
 import { PhoneInput } from "../ui/phone-input"
+
 import { useMsal } from '@azure/msal-react';
+import { useAuthToken } from '@/hooks/useAuthToken'; // Importa il hook creato prima
 
 const VoucherForm = () => {
 
-    const { accounts } = useMsal(); 
+    const { accounts } = useMsal();
+    const { getAccessToken } = useAuthToken();
 
-    console.log("Account: "+ accounts[0]?.name);
+
+
+    console.log("Account: " + accounts[0]?.name);
 
 
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -43,6 +48,7 @@ const VoucherForm = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const API_URL = import.meta.env.VITE_API_URL;
+    const API_BACKEND_URL = import.meta.env.VITE_API_BACKEND_URL;
     const API_TOKEN = import.meta.env.VITE_API_TOKEN;
     const WIFI_SSID = import.meta.env.VITE_WIFI_SSID; // Nome della rete WiFi
     const PREFIX = import.meta.env.VITE_API_PREFIX; // Prefisso per lo username
@@ -65,15 +71,18 @@ const VoucherForm = () => {
         setIsLoading(true);
         setMessage(null);
         setGeneratedVoucher(null);
-        setIsSubmitting(true)
+        setIsSubmitting(true);
+
+        const token = await getAccessToken();
 
         const userId = generateUserId(PREFIX);
         const password = generatePassword();
 
-         // Ottieni il nome dell'utente loggato (display name)
+        // Ottieni il nome dell'utente loggato (display name)
         const sponsor = accounts[0]?.name;
 
         try {
+            console.log("Generazione voucher in corso...");
             const response = await fetch(API_URL, {
                 method: "POST",
                 headers: {
@@ -93,23 +102,48 @@ const VoucherForm = () => {
                     sponsor: sponsor,  // Aggiungi lo sponsor al corpo della richiesta
                 }),
             });
-            console.log(formData.mobilePhone);
+
             if (response.ok) {
-                setMessage("✅ Voucher generato con successo!");
-                setGeneratedVoucher({
-                    username: userId,
-                    password: password,
+                console.log("Voucher generato con successo!");
+                console.log(token);
+                const responseMail = await fetch(API_BACKEND_URL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({
+                        to: "alessandro.ranuzzi@nexq.it",
+                        subject: "WiFi Voucher - " + import.meta.env.VITE_WIFI_SSID,
+                        text: "Ciao, questa è una mail di test mandata da react!\n\rWIFISSID:" + import.meta.env.VITE_WIFI_SSID + "\n\rUser: " + userId + "\n\rPassword: " + password,
+                    }),
                 });
-                setFormData({
-                    name: "",
-                    company: "",
-                    email: "",
-                    notes: "",
-                    duration: "",
-                    mobilePhone: "",
-                });
+                const responseText = await responseMail.text(); // Leggi la risposta come testo
+                console.log("Risposta del server:", responseText);
+                if (responseMail.ok) {
+                    console.log("Email inviata con successo!");
+                    setMessage("✅ Voucher generato con successo!");
+                    setGeneratedVoucher({
+                        username: userId,
+                        password: password,
+                    });
+                    setFormData({
+                        name: "",
+                        company: "",
+                        email: "",
+                        notes: "",
+                        duration: "",
+                        mobilePhone: "",
+                    });
+                } else {
+                    const errorDetails = await responseMail.json();
+                    console.error("Errore nell'invio dell'email:", errorDetails);
+                    console.error("❌ Errore nell'invio dell'email");
+                }
             } else {
                 setMessage("❌ Errore nella generazione del voucher");
+
+
             }
         } catch (error) {
             console.error("Errore API:", error);
