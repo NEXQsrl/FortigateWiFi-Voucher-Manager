@@ -17,6 +17,6 @@ export const sendEmailController = async (req: Request, res: Response): Promise<
 
         res.status(200).json({ message: 'Email inviata con successo!' });
     } catch (error) {
-        res.status(500).json({ error: 'Errore durante l\'invio dell\'email' });
+        res.status(500).json({ error: 'Errore durante l\'invio dell\'email, errore: ' });
     }
 };
