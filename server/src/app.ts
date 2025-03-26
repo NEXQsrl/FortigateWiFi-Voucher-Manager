@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors'; // Importa il modulo CORS
 import mailRoutes from './routes/mail.route';
+import firewallRoutes from './routes/firewall.route';
 
 const app = express();
 app.use(express.json());
@@ -12,5 +13,6 @@ app.use(express.json());
 }));*/
 
 app.use('/api/mail', mailRoutes);
+app.use('/api/firewall', firewallRoutes);
 
 export default app;
