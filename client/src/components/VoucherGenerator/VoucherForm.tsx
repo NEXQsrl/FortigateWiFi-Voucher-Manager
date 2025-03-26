@@ -213,7 +213,6 @@ const VoucherForm = () => {
                         <Label htmlFor="duration">Voucher Duration</Label>
                         <Select value={formData.duration} onValueChange={handleSelectChange} required>
                             <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Select duration" />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="1">1 hour</SelectItem>

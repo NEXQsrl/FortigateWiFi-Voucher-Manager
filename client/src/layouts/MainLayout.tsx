@@ -1,46 +1,68 @@
-import { ReactNode } from "react";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { ReactNode, useState } from "react";
 import { Link } from "react-router-dom";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-  } from "@/components/ui/dropdown-menu"
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Ticket, UserCircle } from "lucide-react"
+import { LayoutDashboard, Ticket } from "lucide-react"
 import { useMsal } from "@azure/msal-react";  // Importa useMsal per gestire il logout
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+import { useFirewallConfig } from "@/hooks/useFirewallConfig";
+
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState, AppDispatch } from '@/store/store';
+import { setSelectedFirewall } from '@/store/firewallSlice';
 
 interface MainLayoutProps {
   children: ReactNode;
 }
 
+
 const MainLayout = ({ children }: MainLayoutProps) => {
-    const pathname = window.location.pathname;
+  const pathname = window.location.pathname;
 
-     // Usa il hook useMsal per ottenere l'istanza MSAL
-    const { instance } = useMsal();
-    
-    // Usa useMsal per ottenere l'istanza MSAL e gli account dell'utente
-    const { accounts } = useMsal(); // Accedi direttamente agli account
+  // Usa il hook useMsal per ottenere l'istanza MSAL
+  const { instance } = useMsal();
 
-    // Estrai il display name dall'account dell'utente loggato
-    const userName = accounts.length > 0 ? accounts[0]?.name : "User";  // Se l'utente è loggato, mostra il nome
+  // Usa useMsal per ottenere l'istanza MSAL e gli account dell'utente
+  const { accounts } = useMsal(); // Accedi direttamente agli account
 
-    // Funzione per ottenere le iniziali
-    const getInitials = (name: string) => {
-      const nameParts = name.split(" ");
-      const initials = nameParts.length > 1
-        ? nameParts[0][0] + nameParts[1][0]  // Per nome completo
-        : nameParts[0][0];  // Solo il primo nome
-      return initials.toUpperCase();
-    };
+  // Estrai il display name dall'account dell'utente loggato
+  const userName = accounts.length > 0 ? accounts[0]?.name : "User";  // Se l'utente è loggato, mostra il nome
 
-    // Funzione per gestire il logout
-    const handleLogout = () => {
-      instance.logoutRedirect({
-        postLogoutRedirectUri: window.location.origin,  // Redirigi alla home dopo il logout
-      });
-    };
+  const [firewall, setFirewall] = useState(useFirewallConfig());  // Inizializza lo stato del firewall
+  const dispatch = useDispatch<AppDispatch>();
+  const selectedFirewall = useSelector((state: RootState) => state.firewall.selectedFirewall);
+
+
+  // Funzione per ottenere le iniziali
+  const getInitials = (name: string) => {
+    const nameParts = name.split(" ");
+    const initials = nameParts.length > 1
+      ? nameParts[0][0] + nameParts[1][0]  // Per nome completo
+      : nameParts[0][0];  // Solo il primo nome
+    return initials.toUpperCase();
+  };
+
+  // Funzione per gestire il logout
+  const handleLogout = () => {
+    instance.logoutRedirect({
+      postLogoutRedirectUri: window.location.origin,  // Redirigi alla home dopo il logout
+    });
+  };
+
+  // Funzione per gestire il cambio di selezione
+  const handleSelectChange = (value: string) => {
+    const selected = firewall.find(fw => fw.FIREWALL === value);
+    if (selected) {
+      dispatch(setSelectedFirewall(selected));
+    }
+  };
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -52,7 +74,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
               alt="Logo"
               className="h-auto w-[80px] object-contain"
             />
-            
+
             <span className="hidden font-bold md:inline-block">{import.meta.env.VITE_NAME}</span>
           </Link>
         </div>
@@ -66,15 +88,8 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                 </div>
                 <span className="sr-only">User menu</span>
               </Button>
-            
-              {/*<Button variant="ghost" size="icon" className="rounded-full">
-                <UserCircle className="h-6 w-6" />
-                <span className="sr-only">User menu</span>
-              </Button>*/}
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {/*<DropdownMenuItem>Profile</DropdownMenuItem>*/}
-              {/*<DropdownMenuItem>Settings</DropdownMenuItem>*/}
               <DropdownMenuItem onClick={handleLogout}>
                 Logout
               </DropdownMenuItem>
@@ -86,6 +101,21 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       <div className="flex flex-1">
         <aside className="w-14 border-r bg-muted/40 md:w-64">
           <nav className="flex flex-col gap-2 p-2">
+            <Select onValueChange={handleSelectChange}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Firewall" />
+              </SelectTrigger>
+              <SelectContent>
+                {
+                  firewall.map((fw, index) => (
+                    <SelectItem key={fw.index} value={fw.FIREWALL}>
+                      {fw.FIREWALL}
+                    </SelectItem>
+                  ))
+                }
+              </SelectContent>
+            </Select>
+
             <Link to="/voucher-generator">
               <Button
                 variant={pathname === "/vouchers/generate" ? "secondary" : "ghost"}
