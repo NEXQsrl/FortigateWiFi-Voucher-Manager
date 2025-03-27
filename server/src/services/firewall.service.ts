@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import { Firewall } from '../interfaces/firewall';
 import axios from 'axios';
+import { Voucher } from '../interfaces/voucher';
 
 dotenv.config();
 const jsonString: any = process.env.FIREWALL_CONFIG;
@@ -10,7 +11,7 @@ export const generateVoucher = async (firewall: Firewall): Promise<void> => {
     const selectedFirewall = firewallConfig.find((fw: { FIREWALL: string; }) => fw.FIREWALL === firewall.firewallName);
 
     try {
-        const apiUrl = `${selectedFirewall.API_HOST}/v2/cmdb/user/group/Guests%20Portale/guest?vdom=root`;
+        const apiUrl = `${selectedFirewall.API_HOST}${selectedFirewall.API_URL}`;
         const body = {
             "user-id": firewall['user-id'],
             name: firewall.name,
@@ -33,5 +34,26 @@ export const generateVoucher = async (firewall: Firewall): Promise<void> => {
     } catch (error) {
         console.error('Errore durante la generazione del voucher: ', error);
         throw new Error('Errore durante la generazione del voucher');
+    }
+}
+
+export const getVoucher = async (firewall: any): Promise<Voucher[]> => {
+    const selectedFirewall = firewallConfig.find((fw: { FIREWALL: string; }) => fw.FIREWALL === firewall.firewallName);
+    console.log(selectedFirewall);
+    try {
+        const apiUrl = `${selectedFirewall.API_HOST}${selectedFirewall.API_URL}`;
+        console.log("APIURL: " + apiUrl);
+
+        const response = await axios.get(apiUrl, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${selectedFirewall.API_TOKEN}`,
+            }
+        });
+
+        return response.data.results;
+    } catch (error) {
+        console.error('Errore durante la GET dei voucher: ', error);
+        return [];
     }
 }
