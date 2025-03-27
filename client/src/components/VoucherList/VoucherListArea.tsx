@@ -19,7 +19,11 @@ import {
     useReactTable,
 } from "@tanstack/react-table"
 
-import {type Voucher } from "@/types/Voucher"
+import { type Voucher } from "@/types/Voucher"
+import { RootState } from "@/store/store"
+import { useSelector } from "react-redux"
+import { useAuthToken } from "@/hooks/useAuthToken"
+import { useMsal } from "@azure/msal-react"
 
 const VoucherListArea = () => {
     const [sorting, setSorting] = useState<SortingState>([
@@ -30,27 +34,39 @@ const VoucherListArea = () => {
     const [error, setError] = useState<string>('');
     const [vouchers, setVouchers] = useState<Voucher[]>([]);
 
-    const API_URL = import.meta.env.VITE_API_URL;
-    const API_TOKEN = import.meta.env.VITE_API_TOKEN;
+    const { accounts } = useMsal();
+    const { getAccessToken } = useAuthToken();
+    const selectedFirewall = useSelector((state: RootState) => state.firewall.selectedFirewall);
+
+
+    const API_URL = import.meta.env.VITE_API_GETVOUCHER_URL;
 
     const fetchVouchers = async () => {
         try {
+            const token = await getAccessToken();
             setLoading(true);
-            const response = await fetch(API_URL, {
+            console.log(token);
+            if (!selectedFirewall) {
+                setError("No firewall selected.");
+                setVouchers([]);
+                return;
+            }
+            const response = await fetch(`${API_URL}?firewallName=${encodeURIComponent(selectedFirewall.FIREWALL)}`, {
                 method: "GET",
                 headers: {
-                    Authorization: `Bearer ${API_TOKEN}`,
+                    Authorization: `Bearer ${token}`,
                 },
             });
 
             if (response.ok) {
                 const data = await response.json();
-                setVouchers(data.results);
+                console.log(data);
+                setVouchers(data);
             } else {
                 setError("Errore nella richiesta");
             }
         } catch (error) {
-            setError("Errore nel recupero dei dati");
+            setError("Errore nel recupero dei dati: "+error);
             setVouchers([]);
         } finally {
             setLoading(false);
@@ -60,7 +76,7 @@ const VoucherListArea = () => {
     // Carica i dati iniziali quando il componente viene montato
     useEffect(() => {
         fetchVouchers();
-    }, []);
+    }, [selectedFirewall]);
 
     const columns: ColumnDef<Voucher>[] = [
         {
