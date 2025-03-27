@@ -9,32 +9,42 @@ import NotFound from "../pages/NotFound";
 
 import PrivateRoute from "./PrivateRoute";
 
+// AppRoutes component that defines the application's routing structure
 const AppRoutes = () => {
   return (
     <Routes>
-      {/* Route con AuthLayout */}
-      <Route path="/login" element={
-        <AuthLayout>
-          <Login />
-        </AuthLayout>
-      }
+      {/* Routes with AuthLayout */}
+      <Route
+        path="/login"
+        element={
+          <AuthLayout>
+            <Login />
+          </AuthLayout>
+        }
       />
-      <Route path="/" element={
-        <AuthLayout>
-          <Login />
-        </AuthLayout>} />
-      {/* Route con MainLayout */}
-      <Route path="*" element={
-        <MainLayout>
-          <Routes>
-            <Route element={<PrivateRoute />}>
-              <Route path="/voucher-list" element={<VoucherList />} />
-              <Route path="/voucher-generator" element={<VoucherGenerator />} />
-              <Route path="*" element={<NotFound />} />
-            </Route>
-          </Routes>
-        </MainLayout>
-      }
+      <Route
+        path="/"
+        element={
+          <AuthLayout>
+            <Login />
+          </AuthLayout>
+        }
+      />
+      {/* Routes with MainLayout */}
+      <Route
+        path="*"
+        element={
+          <MainLayout>
+            <Routes>
+              {/* Protected routes */}
+              <Route element={<PrivateRoute />}>
+                <Route path="/voucher-list" element={<VoucherList />} />
+                <Route path="/voucher-generator" element={<VoucherGenerator />} />
+                <Route path="*" element={<NotFound />} />
+              </Route>
+            </Routes>
+          </MainLayout>
+        }
       />
     </Routes>
   );

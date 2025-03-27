@@ -1,31 +1,29 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Outlet } from 'react-router-dom';
-import { useMsal } from '@azure/msal-react';
-import { useEffect, useState } from 'react';
+import { Outlet } from "react-router-dom";
+import { useMsal } from "@azure/msal-react";
+import { useEffect, useState } from "react";
 
+// PrivateRoute component that protects routes and ensures authentication
 const PrivateRoute = () => {
-    const { accounts } = useMsal(); // Ottieni l'account (utente autenticato)
-    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false); // stato iniziale null (non sappiamo ancora)
-    console.log('Account:', accounts[0]?.name);
+  const { accounts } = useMsal(); // Access user accounts
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false); // Authentication state
 
-    useEffect(() => {
-        if (accounts.length > 0 && accounts[0]?.name) {
-            setIsAuthenticated(true);
-        } else {
-            setIsAuthenticated(false);
-        }
-    }, [accounts]);
-
-    if (isAuthenticated === false) {
-        console.log('Utente non autenticato');
-        //return <Navigate to="/Login" replace />; // Redirigi alla pagina di login
-        return null;
+  useEffect(() => {
+    // Check if the user is authenticated
+    if (accounts.length > 0 && accounts[0]?.name) {
+      setIsAuthenticated(true);
     } else {
-        console.log('Utente autenticato');
-
-        // Se l'utente è autenticato, mostra il contenuto della rotta protetta
-        return <Outlet />;
+      setIsAuthenticated(false);
     }
+  }, [accounts]);
+
+  if (isAuthenticated === false) {
+    console.log("User not authenticated");
+    return null; // Prevent access to protected routes
+  } else {
+    console.log("User authenticated");
+    return <Outlet />; // Render child routes
+  }
 };
 
 export default PrivateRoute;

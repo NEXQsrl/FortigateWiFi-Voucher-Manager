@@ -1,23 +1,25 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Firewall } from '@/types/Firewall';
 
+// Initial state for the firewall slice
 const initialState: { selectedFirewall: Firewall | null } = {
     selectedFirewall: null,
-  };
-  
-  const firewallSlice = createSlice({
-    name: 'firewall',
-    initialState,
-    reducers: {
-      setSelectedFirewall: (state, action: PayloadAction<Firewall>) => {
-        state.selectedFirewall = action.payload;
-      },
-    },
-  });
+};
 
-  
-// Esporta le azioni
+// Redux slice for managing firewall-related state
+const firewallSlice = createSlice({
+  name: 'firewall', // Name of the slice
+  initialState,
+  reducers: {
+    // Action to set the selected firewall
+    setSelectedFirewall: (state, action: PayloadAction<Firewall>) => {
+      state.selectedFirewall = action.payload;
+    },
+  },
+});
+
+// Export the actions
 export const { setSelectedFirewall } = firewallSlice.actions;
 
-// Esporta il reducer per lo store
+// Export the reducer for the store
 export const firewallReducer = firewallSlice.reducer;

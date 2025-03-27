@@ -14,11 +14,13 @@ import { loginRequest } from "@/config/AuthConfig";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
+// LoginForm component handles user login using Microsoft authentication
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
 
+  // Access MSAL instance and accounts
   const { instance, accounts } = useMsal();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -26,6 +28,7 @@ export function LoginForm({
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Redirect to another page if the user is already logged in
     if (accounts && accounts.length > 0) {
       setIsLoading(true);
       navigate('/voucher-generator');
@@ -34,6 +37,7 @@ export function LoginForm({
     }
   }, [accounts, navigate]);
 
+  // Handle login using Microsoft authentication
   const handleLogin = async () => {
     try {
       const response = await instance.loginRedirect(loginRequest);
@@ -50,6 +54,7 @@ export function LoginForm({
       <Card>
         <CardHeader className="text-center">
           
+          {/* Display application name */}
           <CardTitle className="text-xl">
             {import.meta.env.VITE_NAME}
           </CardTitle>
@@ -72,6 +77,7 @@ export function LoginForm({
               <form>
                 <div className="grid gap-6">
                   <div className="flex flex-col gap-4">
+                    {/* Login button */}
                     <Button variant="outline" className="w-full" onClick={handleLogin}>
                       <svg xmlns="http://www.w3.org/2000/svg">
                         <g fill="currentColor">
@@ -92,6 +98,7 @@ export function LoginForm({
         </CardContent>
       </Card>
       <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
+        {/* Footer text */}
         Powered By <a href="https://www.nexq.it" target="_blank" rel="noopener noreferrer">NEXQ</a>
       </div>
     </div>

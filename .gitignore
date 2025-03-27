@@ -1,15 +1,15 @@
-# Node.js (server e client)
+# Ignore Node.js dependencies for both server and client
 node_modules/
 npm-debug.log*
 yarn-error.log
 pnpm-debug.log*
 
-# Vite-specific (evita di committare build e cache)
+# Ignore Vite-specific build and cache directories
 client/dist/
 client/.vite/
 client/.cache/
 
-# Logs
+# Ignore log files
 logs/
 *.log
 server/logs/
@@ -19,14 +19,14 @@ client/*.log
 server/npm-debug.log
 client/npm-debug.log
 
-# Ambiente (file sensibili, es. variabili API)
+# Ignore environment files containing sensitive information
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
 
-# Editor e OS
+# Ignore editor and OS-specific files
 .DS_Store
 Thumbs.db
 .vscode/
@@ -34,22 +34,22 @@ Thumbs.db
 *.swp
 *.swo
 
-# Test Coverage
+# Ignore test coverage reports
 coverage/
 server/coverage/
 client/coverage/
 
-# Docker
+# Ignore Docker-related files
 docker-compose.override.yml
 .dockerignore
 server/dist/
 client/dist/
 
-# Build output
+# Ignore build output directories
 dist/
 out/
 
-# Azure DevOps e CI/CD
+# Ignore Azure DevOps and Terraform state files
 .azure-pipelines/
 terraform.tfstate
 terraform.tfstate.backup
