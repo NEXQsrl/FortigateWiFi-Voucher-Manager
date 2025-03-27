@@ -18,6 +18,8 @@ import { PhoneInput } from "../ui/phone-input"
 
 import { useMsal } from '@azure/msal-react';
 import { useAuthToken } from '@/hooks/useAuthToken'; // Importa il hook creato prima
+import { RootState } from "@/store/store"
+import { useSelector } from "react-redux"
 
 const VoucherForm = () => {
 
@@ -43,9 +45,14 @@ const VoucherForm = () => {
         username?: string;
         password?: string;
     } | null>(null);
+
+
     const [message, setMessage] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const selectedFirewall = useSelector((state: RootState) => state.firewall.selectedFirewall);
+
 
     const API_URL = import.meta.env.VITE_API_URL;
     const API_BACKEND_URL = import.meta.env.VITE_API_BACKEND_URL;
@@ -87,9 +94,10 @@ const VoucherForm = () => {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${API_TOKEN}`,
+                    Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({
+                    firewallName: selectedFirewall?.FIREWALL,
                     "user-id": userId,
                     name: formData.name,
                     password: password,
@@ -113,9 +121,9 @@ const VoucherForm = () => {
                         Authorization: `Bearer ${token}`,
                     },
                     body: JSON.stringify({
-                        to: "alessandro.ranuzzi@nexq.it",
+                        to: formData.email,
                         subject: "WiFi Voucher - " + import.meta.env.VITE_WIFI_SSID,
-                        text: "Ciao, questa è una mail di test mandata da react!\n\rWIFISSID:" + import.meta.env.VITE_WIFI_SSID + "\n\rUser: " + userId + "\n\rPassword: " + password,
+                        text: "Ciao, questa è una mail di test mandata da react!\n\rWIFISSID:" + selectedFirewall?.WIFI_SSID + "\n\rUser: " + userId + "\n\rPassword: " + password,
                     }),
                 });
                 const responseText = await responseMail.text(); // Leggi la risposta come testo
@@ -213,6 +221,7 @@ const VoucherForm = () => {
                         <Label htmlFor="duration">Voucher Duration</Label>
                         <Select value={formData.duration} onValueChange={handleSelectChange} required>
                             <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select duration" />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="1">1 hour</SelectItem>
