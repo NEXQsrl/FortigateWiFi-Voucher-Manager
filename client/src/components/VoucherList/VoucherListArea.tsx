@@ -47,9 +47,11 @@ const VoucherListArea = () => {
             setLoading(true);
             console.log(token);
             if (!selectedFirewall) {
-                setError("No firewall selected.");
+                setError("Please select firewall.");
                 setVouchers([]);
                 return;
+            }else{
+                setError("");
             }
             const response = await fetch(`${API_URL}?firewallName=${encodeURIComponent(selectedFirewall.FIREWALL)}`, {
                 method: "GET",
@@ -192,8 +194,9 @@ const VoucherListArea = () => {
                     <span className="text-gray-500">Caricamento in corso...</span>
                 </div>
             ) : error ? (
-                <div className="flex justify-center items-center h-32 text-red-500">
-                    <span>Errore: {error}</span>
+                <div className="flex flex-col justify-center items-center h-32 text-gray-700 font-semibold text-2xl">
+                    <span className="text-4xl">😞</span>
+                    <span className="p-2">{error}</span>
                 </div>
             ) : (
                 <>
