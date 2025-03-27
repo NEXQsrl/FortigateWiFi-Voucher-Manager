@@ -101,7 +101,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
         <aside className="w-14 border-r bg-muted/40 md:w-64">
           <nav className="flex flex-col gap-2 p-2">
             {/* Firewall selection dropdown */}
-            <Select onValueChange={handleSelectChange}>
+            <Select onValueChange={handleSelectChange} value={selectedFirewall?.FIREWALL}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Firewall" />
               </SelectTrigger>
