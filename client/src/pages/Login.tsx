@@ -6,12 +6,11 @@ const Login = () => {
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
       <div className="flex w-full max-w-sm flex-col gap-6">
         {/* Application logo and name */}
-        <a href="#" className="flex items-center gap-2 self-center font-medium">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
-            <span className="text-lg font-bold text-primary-foreground">WF</span>
-          </div>
-          <span className="hidden font-bold md:inline-block">WiFi Manager</span>
-        </a>
+        <img 
+            src={import.meta.env.VITE_LOGO_URL} 
+            alt="Logo" 
+            className="w-32 h-auto object-contain flex items-center gap-2 self-center font-medium"
+          /> 
         {/* Render the login form */}
         <LoginForm />
       </div>
