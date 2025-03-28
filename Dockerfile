@@ -1,5 +1,5 @@
-# Stage 1: Build stage
-FROM ubuntu:24.04 AS installer
+# Stage 1: Build the client
+FROM ubuntu:24.04 AS client-builder
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
     xz-utils && \
     rm -rf /var/lib/apt/lists/*
 
-# Install Node.js v22.13.1 (download directly from Node.js website)
+# Install Node.js v22.13.1 (for client)
 RUN curl -fsSL https://nodejs.org/dist/v22.13.1/node-v22.13.1-linux-x64.tar.xz -o node-v22.13.1-linux-x64.tar.xz && \
     tar -xJf node-v22.13.1-linux-x64.tar.xz -C /usr/local --strip-components=1 && \
     rm node-v22.13.1-linux-x64.tar.xz
@@ -19,36 +19,107 @@ RUN curl -fsSL https://nodejs.org/dist/v22.13.1/node-v22.13.1-linux-x64.tar.xz -
 # Verify Node.js and npm installation
 RUN node -v && npm -v
 
-# Set working directory
-WORKDIR /app
+# Set working directory for client
+WORKDIR /app/client
 
-# Copy package.json and package-lock.json
-COPY package*.json ./
+# Copy client package.json and package-lock.json
+COPY client/package*.json ./
 
-# Bypass Certificate Errors
-ENV NODE_TLS_REJECT_UNAUTHORIZED=0
-RUN npm config set strict-ssl false
-
-# Install npm dependencies
+# Install client dependencies
 RUN npm install --legacy-peer-deps
 
-# Copy the rest of the application
-COPY . .
+# Copy the rest of the client code
+COPY client/ .
 
-# Expose the port that the frontend will listen on
-EXPOSE 5173
+# Build the client app
+RUN npm run build
 
+# Stage 2: Build the server
+FROM ubuntu:24.04 AS server-builder
 
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    gnupg2 \
+    lsb-release \
+    ca-certificates \
+    build-essential \
+    xz-utils && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install Node.js v22.13.1 (for server)
+RUN curl -fsSL https://nodejs.org/dist/v22.13.1/node-v22.13.1-linux-x64.tar.xz -o node-v22.13.1-linux-x64.tar.xz && \
+    tar -xJf node-v22.13.1-linux-x64.tar.xz -C /usr/local --strip-components=1 && \
+    rm node-v22.13.1-linux-x64.tar.xz
+
+# Verify Node.js and npm installation
+RUN node -v && npm -v
+
+# Set working directory for server
+WORKDIR /app/server
+
+# Copy server package.json and package-lock.json
+COPY server/package*.json ./
+
+# Install server dependencies
+RUN npm install --legacy-peer-deps
+
+# Copy the rest of the server code
+COPY server/ .
+
+# Stage 3: Create the final image
+FROM ubuntu:24.04 AS final
+
+# Install dependencies for running both client and server
+RUN apt-get update && apt-get install -y \
+    curl \
+    gnupg2 \
+    lsb-release \
+    ca-certificates \
+    build-essential \
+    xz-utils && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install Node.js v22.13.1
+RUN curl -fsSL https://nodejs.org/dist/v22.13.1/node-v22.13.1-linux-x64.tar.xz -o node-v22.13.1-linux-x64.tar.xz && \
+    tar -xJf node-v22.13.1-linux-x64.tar.xz -C /usr/local --strip-components=1 && \
+    rm node-v22.13.1-linux-x64.tar.xz
+
+# Create directories for client and server
+WORKDIR /app
+
+# Copy the built client and server from previous stages
+COPY --from=client-builder /app/client /app/client
+COPY --from=server-builder /app/server /app/server
+
+# Copy the .env file for the server and client
+#COPY .env ./
+
+# Expose the ports for both client (5173) and server (3000, or your preferred server port)
+EXPOSE 5173 3000
+
+# Environment variables (customizza secondo le tue necessità)
+ENV NODE_PORT=3000
+ENV NODE_TLS_REJECT_UNAUTHORIZED=0
+ENV SMTP_MAIL=donotreply@nexq.it
+ENV SMTP_HOST=smtp.azurecomm.net
+ENV SMTP_PORT=587
+ENV SMTP_SECURE=false
+ENV SMTP_USER=NEXQ-CommunicationServices.ef2e97dc-3cbc-4a8f-b064-42bc2089e744.a62a799d-0556-44ca-afc3-237b336510b7
+ENV SMTP_PASSWORD=4Kh8Q~btlOQZh5WzSLQwaayJFnYDCol5G0CzObcq
 ENV VITE_CLIENT_ID="e03381ce-8ca1-467d-81d4-adcb2a38ffeb"
 ENV VITE_TENANT_ID="a62a799d-0556-44ca-afc3-237b336510b7"
 ENV VITE_REDIRECT_URI="/"
-ENV VITE_API_HOST="https://nqpffort01.nexq.it:7444/api"
-ENV VITE_API_URL="/api/v2/cmdb/user/group/Guests%20Portale/guest?vdom=root"
+ENV VITE_API_GETVOUCHER_URL="/api/firewall/GetVoucher"
+ENV VITE_API_URL="/api/firewall/GenerateVoucher"
+ENV VITE_API_BACKEND_URL="/api/mail/send"
 ENV VITE_API_TOKEN="ns037p6gkszqbr9njgcmbf5fmmGNjs"
-ENV VITE_WIFI_SSID="NEXQ-Guest"
 ENV VITE_API_PREFIX="NQ"
 ENV VITE_PHONE_COUNTRY="IT"
+ENV VITE_NAME="NEXQ WiFi Voucher"
+ENV VITE_LOGO_URL="https://www.nexq.it/wp-content/uploads/2024/07/logo-colorato.svg"
+ENV VITE_FIREWALL_CONFIG='[{"FIREWALL": "Firewall1","API_HOST": "https://nqpffort01.nexq.it:7444","API_URL": "/api/v2/cmdb/user/group/Guests%20Portale/guest?vdom=root","API_TOKEN": "ns037p6gkszqbr9njgcmbf5fmmGNjs","WIFI_SSID": "NEXQ-Guest"},{"FIREWALL": "Firewall2","API_HOST": "https://testfw.nexq.it:8444","API_URL": "/api/v2/cmdb/user/group/Guest%20Users/guest?vdom=root","API_TOKEN": "0mcrz3mfqnNdfcb3tyd3p35Hb83yts","WIFI_SSID": "ROBOMAGISTER-WIFI"}]'
 
 
-# Command to start the server
-CMD ["npm", "run", "dev"]
+# Start both client and server (make sure the server is running on port 3000)
+CMD ["sh", "-c", "npm run start --prefix /app/server & npm run dev --prefix /app/client"]

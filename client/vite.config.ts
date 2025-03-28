@@ -43,12 +43,11 @@ export default defineConfig({
     },
     host: "0.0.0.0",
     port: 5173,
-    allowedHosts: "all",
-    https: useSSL
-      ? {
+    allowedHosts: true,
+    https: useSSL ? {
         key: fs.readFileSync(keyPath),
         cert: fs.readFileSync(certPath),
       }
-      : false, // Se i certificati non esistono, usa HTTP normale
+      : undefined, // Se i certificati non esistono, usa HTTP normale
   },
 })
