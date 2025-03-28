@@ -6,7 +6,7 @@ import { checkAuth } from "../middleware/auth"; // 🔹 Middleware per l'autenti
 const router = Router();
 
 router.post('/send', (req: Request, response: Response) => {
-    console.log(req.header("authorization"));
+    //console.log(req.header("authorization"));
     checkAuth(req, response, () => sendEmailController(req, response)); // 🔹 Protegge la rotta con l'autenticazione
 })
 

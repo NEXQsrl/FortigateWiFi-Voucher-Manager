@@ -3,9 +3,6 @@ import fs from "fs";
 import tailwindcss from "@tailwindcss/vite"
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 // Percorsi dei certificati SSL
 const certPath = "./certs/cert.pem";
@@ -16,6 +13,7 @@ const useSSL = fs.existsSync(certPath) && fs.existsSync(keyPath);
 
 // https://vite.dev/config/
 export default defineConfig({
+  envDir: path.resolve(__dirname, ".."),
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {

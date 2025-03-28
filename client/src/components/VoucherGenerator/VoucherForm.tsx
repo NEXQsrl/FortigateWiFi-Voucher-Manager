@@ -27,7 +27,7 @@ const VoucherForm = () => {
     const { accounts } = useMsal();
     const { getAccessToken } = useAuthToken();
 
-    console.log("Account: " + accounts[0]?.name); // Log the name of the logged-in user
+    //console.log("Account: " + accounts[0]?.name); // Log the name of the logged-in user
 
     // State to manage form submission status
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -63,14 +63,13 @@ const VoucherForm = () => {
     const API_URL = import.meta.env.VITE_API_URL;
     const API_BACKEND_URL = import.meta.env.VITE_API_BACKEND_URL;
     const API_TOKEN = import.meta.env.VITE_API_TOKEN;
-    const WIFI_SSID = import.meta.env.VITE_WIFI_SSID; // WiFi network name
     const PREFIX = import.meta.env.VITE_API_PREFIX; // Username prefix
 
     useEffect(() => {
         if (!selectedFirewall) {
             setError("Please select firewall.");
             return;
-        }else{
+        } else {
             setError('');
         }
     }, [selectedFirewall]);
@@ -117,7 +116,7 @@ const VoucherForm = () => {
         const sponsor = accounts[0]?.name;
 
         try {
-            console.log("Generating voucher...");
+            //console.log("Generating voucher...");
             // API call to generate voucher
             const response = await fetch(API_URL, {
                 method: "POST",
@@ -141,8 +140,8 @@ const VoucherForm = () => {
             });
 
             if (response.ok) {
-                console.log("Voucher generated successfully!");
-                console.log(token);
+                //console.log("Voucher generated successfully!");
+                //console.log(token);
 
                 // API call to send email with voucher details
                 const responseMail = await fetch(API_BACKEND_URL, {
@@ -153,16 +152,59 @@ const VoucherForm = () => {
                     },
                     body: JSON.stringify({
                         to: formData.email,
-                        subject: "WiFi Voucher - " + import.meta.env.VITE_WIFI_SSID,
-                        text: `Hello, this is a test email sent from React!\n\rWiFi SSID: ${selectedFirewall?.WIFI_SSID}\n\rUser: ${userId}\n\rPassword: ${password}`,
+                        subject: "WiFi Voucher - " + selectedFirewall?.WIFI_SSID,
+                        //text: `Hello,\nbelow find its Wifi GUEST code:\n\rWiFi SSID: ${selectedFirewall?.WIFI_SSID}\n\rUser: ${userId}\n\rPassword: ${password}`,
+                        text: `<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accesso WiFi Guest</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f4f4f4; padding: 20px 0;">
+        <tr>
+            <td align="center">
+                <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);">
+                    <tr>
+                        <td align="center">
+                            <h2 style="color: #333;">Benvenuto!</h2>
+                            <p style="font-size: 16px; color: #555;">Puoi connetterti alla nostra rete WiFi Guest utilizzando le seguenti credenziali:</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; text-align: center;">
+                            <p style="font-size: 18px; margin: 5px 0;"><strong>SSID:</strong> ${selectedFirewall.WIFI_SSID}</p>
+                            <p style="font-size: 18px; margin: 5px 0;"><strong>User:</strong> ${userId}</p>
+                            <p style="font-size: 18px; margin: 5px 0;"><strong>Password:</strong> <span style="color: #d9534f;">${password}</span></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="padding: 15px;">
+                            <p style="font-size: 14px; color: #777;">Se hai problemi di connessione, non esitare a contattare il supporto.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="padding-top: 10px; font-size: 14px; color: #777;">
+                            <br/>
+                            <p>Powered By <a href="https://nexq.it">NEXQ S.r.l.</a></p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+`,
                     }),
                 });
 
                 const responseText = await responseMail.text(); // Read the response as text
-                console.log("Server response:", responseText);
+                //console.log("Server response:", responseText);
 
                 if (responseMail.ok) {
-                    console.log("Email sent successfully!");
+                    //console.log("Email sent successfully!");
                     setMessage("✅ Voucher generated successfully!");
                     setGeneratedVoucher({
                         username: userId,
@@ -311,7 +353,7 @@ const VoucherForm = () => {
                                     <p className="font-semibold">Dettagli del Voucher:</p>
                                     <p><strong>Username:</strong> {generatedVoucher.username}</p>
                                     <p><strong>Password:</strong> {generatedVoucher.password}</p>
-                                    <p><strong>WiFi:</strong> {WIFI_SSID}</p>
+                                    <p><strong>WiFi:</strong> {selectedFirewall?.WIFI_SSID}</p>
                                 </div>
                             ) : <div>{message}</div>}
                             <DialogFooter>

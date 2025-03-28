@@ -14,7 +14,7 @@ const firewallSlice = createSlice({
     // Action to set the selected firewall
     setSelectedFirewall: (state, action: PayloadAction<Firewall>) => {
       state.selectedFirewall = action.payload;
-      console.log("Selected firewall:", action.payload);
+      //console.log("Selected firewall:", action.payload);
       localStorage.setItem("selectedFirewall", JSON.stringify(action.payload));
     },
   },

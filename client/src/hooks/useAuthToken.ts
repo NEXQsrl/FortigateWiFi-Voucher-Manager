@@ -14,7 +14,7 @@ export const useAuthToken = () => {
 
         try {
             const response = await instance.acquireTokenSilent(request);
-            console.log(response);
+            //console.log(response);
             return response.accessToken; // 🔹 Questo è il token da inviare all'API
         } catch (error) {
             if (error instanceof InteractionRequiredAuthError) {

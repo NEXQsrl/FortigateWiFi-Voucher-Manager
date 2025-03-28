@@ -41,7 +41,7 @@ export function LoginForm({
   const handleLogin = async () => {
     try {
       const response = await instance.loginRedirect(loginRequest);
-      console.log('Login successful' + response);
+      //console.log('Login successful' + response);
       setIsLoading(true);
       //navigate("/voucher-generator");
     } catch (error) {

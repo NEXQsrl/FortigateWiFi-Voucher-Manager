@@ -2,9 +2,10 @@ import dotenv from 'dotenv';
 import { Firewall } from '../interfaces/firewall';
 import axios from 'axios';
 import { Voucher } from '../interfaces/voucher';
+import path from 'path';
 
-dotenv.config();
-const jsonString: any = process.env.FIREWALL_CONFIG;
+dotenv.config({ path: path.resolve(__dirname, "../../../.env") });
+const jsonString: any = process.env.VITE_FIREWALL_CONFIG;
 const firewallConfig = JSON.parse(jsonString);
 
 export const generateVoucher = async (firewall: Firewall): Promise<void> => {
@@ -39,10 +40,10 @@ export const generateVoucher = async (firewall: Firewall): Promise<void> => {
 
 export const getVoucher = async (firewall: any): Promise<Voucher[]> => {
     const selectedFirewall = firewallConfig.find((fw: { FIREWALL: string; }) => fw.FIREWALL === firewall.firewallName);
-    console.log(selectedFirewall);
+    //console.log(selectedFirewall);
     try {
         const apiUrl = `${selectedFirewall.API_HOST}${selectedFirewall.API_URL}`;
-        console.log("APIURL: " + apiUrl);
+        //console.log("APIURL: " + apiUrl);
 
         const response = await axios.get(apiUrl, {
             headers: {

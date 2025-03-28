@@ -1,8 +1,9 @@
 import nodemailer from 'nodemailer';
 import { Mail } from '../interfaces/mail';
 import dotenv from 'dotenv';
+import path from 'path';
 
-dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, "../../../.env") });
 
 const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
@@ -17,10 +18,11 @@ const transporter = nodemailer.createTransport({
 export const sendMail = async (mail: Mail): Promise<void> => {
     try {
         await transporter.sendMail({
-            from: "donotreply@nexq.it",
+            from: process.env.SMTP_MAIL,
             to: mail.to,
             subject: mail.subject,
-            text: mail.text
+            //text: mail.text
+            html: mail.text,
         });
 
         console.log(`📧 Email inviata a ${mail.to}`);

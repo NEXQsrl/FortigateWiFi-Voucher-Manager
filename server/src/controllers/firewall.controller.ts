@@ -25,9 +25,9 @@ export const generateVoucherController = async (req: Request, res: Response): Pr
 
 export const getVoucherController = async (req: Request, res: Response): Promise<void> => {
     try {
-        console.log("getVoucherController");
+        //console.log("getVoucherController");
         const firewall = req.query;
-        console.log("FIrewall query parameters: " + firewall);
+        //console.log("FIrewall query parameters: " + firewall);
         // Validazione dei parametri
         if (!firewall) {
             res.status(400).json({ error: 'Tutti i campi sono obbligatori' });
@@ -35,7 +35,7 @@ export const getVoucherController = async (req: Request, res: Response): Promise
         }
 
         const vouchers = await getVoucher(firewall);
-        console.log("Vouchers: " + vouchers);
+        //console.log("Vouchers: " + vouchers);
         res.status(200).json(vouchers);
     } catch (error) {
 

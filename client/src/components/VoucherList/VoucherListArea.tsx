@@ -45,7 +45,7 @@ const VoucherListArea = () => {
         try {
             const token = await getAccessToken();
             setLoading(true);
-            console.log(token);
+            //console.log(token);
             if (!selectedFirewall) {
                 setError("Please select firewall.");
                 setVouchers([]);
@@ -62,7 +62,7 @@ const VoucherListArea = () => {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log(data);
+                //console.log(data);
                 setVouchers(data);
             } else {
                 setError("Errore nella richiesta");

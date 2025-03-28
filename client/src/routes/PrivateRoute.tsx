@@ -21,7 +21,7 @@ const PrivateRoute = () => {
     console.log("User not authenticated");
     return null; // Prevent access to protected routes
   } else {
-    console.log("User authenticated");
+    //console.log("User authenticated");
     return <Outlet />; // Render child routes
   }
 };
