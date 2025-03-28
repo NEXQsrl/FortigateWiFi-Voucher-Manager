@@ -1,13 +1,10 @@
 // Function to generate a unique user ID with a prefix
 export const generateUserId = (prefix: string) => {
-  const now = new Date();
-  const yy = now.getFullYear().toString().slice(-2); // Last 2 digits of the year
-  const mm = String(now.getMonth() + 1).padStart(2, "0"); // Month (01-12)
-  const HH = String(now.getHours()).padStart(2, "0"); // Hour (00-23)
-  const MM = String(now.getMinutes()).padStart(2, "0"); // Minutes (00-59)
-  const randomNum = String(Math.floor(Math.random() * 100)).padStart(2, "0"); // 2 random digits
+  const randomNum1 = Math.floor(Math.random() * 10); // Random number (1 character)
+  const randomLetter = String.fromCharCode(65 + Math.floor(Math.random() * 26)); // Random uppercase letter (A-Z)
+  const randomNum2 = String(Math.floor(Math.random() * 100)).padStart(2, "0"); // Random number (2 characters)
 
-  return `${prefix}${yy}${mm}${HH}${MM}${randomNum}`;
+  return `${prefix}${randomNum1}${randomLetter}${randomNum2}`; // Chance of the same userid coming out 2 times is 0.004%
 };
 
 // Function to generate a random password
