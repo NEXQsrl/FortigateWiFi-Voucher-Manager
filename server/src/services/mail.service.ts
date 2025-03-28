@@ -25,9 +25,9 @@ export const sendMail = async (mail: Mail): Promise<void> => {
             html: mail.text,
         });
 
-        console.log(`📧 Email inviata a ${mail.to}`);
+        console.log(`📧 Email sent to  ${mail.to}`);
     } catch (error) {
-        console.error('Errore nell\'invio della mail:', error);
-        throw new Error('Errore durante l\'invio dell\'email');
+        //console.error('Errore nell\'invio della mail:', error);
+        throw new Error('Error while sending the email');
     }
 };
