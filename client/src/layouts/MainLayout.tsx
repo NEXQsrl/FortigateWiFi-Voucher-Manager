@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { ReactNode, useState } from "react";
+import { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import {
   DropdownMenu,
@@ -18,6 +17,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "@/store/store";
 import { setSelectedFirewall } from "@/store/firewallSlice";
 import { Separator } from "@/components/ui/separator";
+import { Firewall } from "@/types/Firewall";
 
 // Props interface for MainLayout
 interface MainLayoutProps {
@@ -33,7 +33,8 @@ const MainLayout = ({ children }: MainLayoutProps) => {
   const { accounts } = useMsal(); // Access user accounts
   const userName = accounts.length > 0 ? accounts[0]?.name : "User"; // Get the logged-in user's name
 
-  const [firewall, setFirewall] = useState(useFirewallConfig()); // Load firewall configuration
+  //const [firewall, setFirewall] = useState(useFirewallConfig()); // Load firewall configuration
+  const firewall : Firewall[] = useFirewallConfig(); // Load firewall configuration
   const dispatch = useDispatch<AppDispatch>();
   const selectedFirewall = useSelector((state: RootState) => state.firewall.selectedFirewall);
 
@@ -106,8 +107,8 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                 <SelectValue placeholder="Firewall" />
               </SelectTrigger>
               <SelectContent>
-                {firewall.map((fw, index) => (
-                  <SelectItem key={fw.index} value={fw.FIREWALL}>
+                {firewall.map((fw) => (
+                  <SelectItem value={fw.FIREWALL}>
                     {fw.FIREWALL}
                   </SelectItem>
                 ))}

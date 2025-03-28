@@ -1,10 +1,8 @@
-/* eslint-disable no-empty */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import type React from "react"
 
 import { useEffect, useState } from "react"
 
-import { Clock, Send } from "lucide-react"
+import { Send } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -13,7 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { addTime, generatePassword, generateUserId } from "@/utils/function"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog"
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog"
 import { PhoneInput } from "../ui/phone-input"
 
 import { useMsal } from '@azure/msal-react';
@@ -28,9 +26,6 @@ const VoucherForm = () => {
     const { getAccessToken } = useAuthToken();
 
     //console.log("Account: " + accounts[0]?.name); // Log the name of the logged-in user
-
-    // State to manage form submission status
-    const [isSubmitting, setIsSubmitting] = useState(false);
 
     // State to store form data
     const [formData, setFormData] = useState({
@@ -50,7 +45,6 @@ const VoucherForm = () => {
 
     // State to manage messages, loading status, and modal visibility
     const [message, setMessage] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [error, setError] = useState<string>('');
 
@@ -62,7 +56,6 @@ const VoucherForm = () => {
     // Environment variables for API configuration
     const API_URL = import.meta.env.VITE_API_URL;
     const API_BACKEND_URL = import.meta.env.VITE_API_BACKEND_URL;
-    const API_TOKEN = import.meta.env.VITE_API_TOKEN;
     const PREFIX = import.meta.env.VITE_API_PREFIX; // Username prefix
 
     useEffect(() => {
@@ -93,16 +86,13 @@ const VoucherForm = () => {
     // Handle form submission
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setIsLoading(true);
         setMessage(null);
         setGeneratedVoucher(null);
-        setIsSubmitting(true);
 
         // Fetch access token
         const token = await getAccessToken();
 
         if (!selectedFirewall || !token) {
-            setIsLoading(false);
             setMessage("❌ Error generating voucher");
             setIsModalOpen(true);
             return;
@@ -200,7 +190,7 @@ const VoucherForm = () => {
                     }),
                 });
 
-                const responseText = await responseMail.text(); // Read the response as text
+                //const responseText = await responseMail.text(); // Read the response as text
                 //console.log("Server response:", responseText);
 
                 if (responseMail.ok) {
@@ -232,7 +222,6 @@ const VoucherForm = () => {
             console.error("API error:", error);
             setMessage("❌ API request error");
         } finally {
-            setIsLoading(false);
             setIsModalOpen(true); // Open modal to display message
         }
     };

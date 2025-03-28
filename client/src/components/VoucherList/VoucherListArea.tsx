@@ -1,11 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { use, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
-import { ArrowUpDown, Search, RefreshCw } from "lucide-react"
+import { ArrowUpDown, RefreshCw } from "lucide-react"
 
 import {
     type ColumnDef,
@@ -34,7 +33,7 @@ const VoucherListArea = () => {
     const [error, setError] = useState<string>('');
     const [vouchers, setVouchers] = useState<Voucher[]>([]);
 
-    const { accounts } = useMsal();
+    useMsal();
     const { getAccessToken } = useAuthToken();
     const selectedFirewall = useSelector((state: RootState) => state.firewall.selectedFirewall);
 

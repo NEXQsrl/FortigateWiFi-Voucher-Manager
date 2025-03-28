@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -40,7 +39,7 @@ export function LoginForm({
   // Handle login using Microsoft authentication
   const handleLogin = async () => {
     try {
-      const response = await instance.loginRedirect(loginRequest);
+      await instance.loginRedirect(loginRequest);
       //console.log('Login successful' + response);
       setIsLoading(true);
       //navigate("/voucher-generator");
